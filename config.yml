@@ -1,9 +1,17 @@
+# db:
+#   host: "db.eucgveokehsssslfihwv.supabase.co"
+#   user: "postgres"
+#   password: "#asdf$a4%^asd"
+#   database: "postgres"
+#   port: 5432
+#   sslmode: "require"
+
 db:
-  host: "db.eucgveokehsssslfihwv.supabase.co"
-  user: "postgres"
-  password: "#asdf$a4%^asd"
-  database: "postgres"
+  host: aws-0-ap-southeast-2.pooler.supabase.com
   port: 5432
+  user: postgres.eucgveokehsssslfihwv
+  password: "#asdf$a4%^asd"
+  database: postgres
   sslmode: "require"
 
 server:
