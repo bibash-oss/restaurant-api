@@ -2,7 +2,7 @@ package menucategory
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/ktmbeestech/yanshi/database"
+	"kitchen-api/internal/database"
 )
 
 func RegisterMenuCategoryRoutes(r *gin.Engine, db *database.OrmDb) {

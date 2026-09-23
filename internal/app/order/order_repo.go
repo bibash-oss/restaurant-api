@@ -7,7 +7,7 @@ import (
 	"kitchen-api/internal/enums"
 
 	"github.com/google/uuid"
-	"github.com/ktmbeestech/yanshi/database"
+	"kitchen-api/internal/database"
 	"gorm.io/gorm"
 )
 

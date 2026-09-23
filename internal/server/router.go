@@ -14,8 +14,8 @@ import (
 	"kitchen-api/internal/app/user"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ktmbeestech/yanshi/config"
-	"github.com/ktmbeestech/yanshi/database"
+	"kitchen-api/internal/config"
+	"kitchen-api/internal/database"
 )
 
 func NewRouter(db *database.OrmDb) *gin.Engine {

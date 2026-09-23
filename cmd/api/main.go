@@ -13,8 +13,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/ktmbeestech/yanshi/config"
-	"github.com/ktmbeestech/yanshi/database"
+	"kitchen-api/internal/config"
+	"kitchen-api/internal/database"
 	"gorm.io/driver/postgres"
 )
 

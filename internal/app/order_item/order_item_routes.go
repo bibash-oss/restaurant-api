@@ -2,7 +2,7 @@ package orderitem
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/ktmbeestech/yanshi/database"
+	"kitchen-api/internal/database"
 )
 
 func RegisterOrderItemRoutes(r *gin.Engine, db *database.OrmDb) {

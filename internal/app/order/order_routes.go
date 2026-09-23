@@ -6,7 +6,7 @@ import (
 	"kitchen-api/internal/app/table"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ktmbeestech/yanshi/database"
+	"kitchen-api/internal/database"
 )
 
 func RegisterOrderRoutes(r *gin.Engine, db *database.OrmDb) {

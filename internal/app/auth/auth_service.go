@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"github.com/ktmbeestech/yanshi/config"
+	"kitchen-api/internal/config"
 	"golang.org/x/crypto/bcrypt"
 )
 

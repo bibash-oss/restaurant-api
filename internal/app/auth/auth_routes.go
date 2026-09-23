@@ -5,7 +5,7 @@ import (
 	"kitchen-api/internal/middlewares"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ktmbeestech/yanshi/database"
+	"kitchen-api/internal/database"
 )
 
 func RegisterAuthRoutes(r *gin.Engine, db *database.OrmDb) {
