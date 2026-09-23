@@ -11,6 +11,7 @@ import (
 	"kitchen-api/internal/app/user"
 	"kitchen-api/internal/server"
 	"log"
+	"os"
 
 	"github.com/ktmbeestech/yanshi/config"
 	"github.com/ktmbeestech/yanshi/database"
@@ -59,7 +60,13 @@ func main() {
 	}
 
 	router := server.NewRouter(database)
-	router.Run(":" + config.GetString("server.port"))
+	port := config.GetString("server.port")
+
+	if envPort := os.Getenv("PORT"); envPort != "" {
+		port = envPort
+	}
+
+	router.Run(":" + port)
 }
 
 func openPostgresDb() (*database.OrmDb, error) {
