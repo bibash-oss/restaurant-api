@@ -30,7 +30,7 @@ jwt:
   expirationHours: 24
 
 cors:
-  origin: "http://localhost:3000"
+  origin: "https://restaurant-ui-omega.vercel.app"
 
 app:
-  url: "http://localhost:3000"
+  url: "https://restaurant-ui-omega.vercel.app"
