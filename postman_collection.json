@@ -1,0 +1,811 @@
+{
+	"info": {
+		"_postman_id": "a9e64e9a-7c98-4c17-8e6f-871d3c08fc4d",
+		"name": "Kitchen API",
+		"description": "Postman Collection for Kitchen Ordering & Management API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Health",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login (Restaurant Staff/Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.data && jsonData.data.token) {",
+									"    pm.collectionVariables.set(\"token\", jsonData.data.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"secret123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Get Profile (Me)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/auth/me",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "me"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Restaurants",
+			"item": [
+				{
+					"name": "Create Restaurant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Burger Craft\",\n  \"address\": \"123 Gourmet Street\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/restaurants",
+							"host": ["{{baseUrl}}"],
+							"path": ["restaurants"]
+						}
+					}
+				},
+				{
+					"name": "Get All Restaurants",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/restaurants",
+							"host": ["{{baseUrl}}"],
+							"path": ["restaurants"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"secret123\",\n  \"restaurantId\": \"550e8400-e29b-41d4-a716-446655440000\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": ["{{baseUrl}}"],
+							"path": ["users"]
+						}
+					}
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": ["{{baseUrl}}"],
+							"path": ["users"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Tables",
+			"item": [
+				{
+					"name": "Create Table",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"restaurantId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"number\": \"T-01\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tables",
+							"host": ["{{baseUrl}}"],
+							"path": ["tables"]
+						}
+					}
+				},
+				{
+					"name": "Get Table By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tables/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["tables", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Tables By Restaurant",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/restaurants/:id/tables",
+							"host": ["{{baseUrl}}"],
+							"path": ["restaurants", ":id", "tables"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "550e8400-e29b-41d4-a716-446655440000"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Table",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"number\": \"T-01-A\",\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tables/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["tables", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Table",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tables/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["tables", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Menu Categories",
+			"item": [
+				{
+					"name": "Create Menu Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"restaurantId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"name\": \"Burgers\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/menu-categories",
+							"host": ["{{baseUrl}}"],
+							"path": ["menu-categories"]
+						}
+					}
+				},
+				{
+					"name": "Get Menu Category By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/menu-categories/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["menu-categories", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Categories By Restaurant",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/restaurants/:id/menu-categories",
+							"host": ["{{baseUrl}}"],
+							"path": ["restaurants", ":id", "menu-categories"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "550e8400-e29b-41d4-a716-446655440000"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Menu Category",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Gourmet Burgers\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/menu-categories/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["menu-categories", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Menu Category",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/menu-categories/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["menu-categories", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Menu Items",
+			"item": [
+				{
+					"name": "Create Menu Item",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"restaurantId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"categoryId\": \"6ba7b810-9dad-11d1-80b4-00c04fd430c8\",\n  \"name\": \"Classic Cheeseburger\",\n  \"description\": \"Juicy beef patty with aged cheddar\",\n  \"price\": 12.99,\n  \"imageUrl\": \"https://example.com/cheeseburger.png\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/menu-items",
+							"host": ["{{baseUrl}}"],
+							"path": ["menu-items"]
+						}
+					}
+				},
+				{
+					"name": "Get Menu Item By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/menu-items/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["menu-items", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Menu Items By Restaurant",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/restaurants/:id/menu-items",
+							"host": ["{{baseUrl}}"],
+							"path": ["restaurants", ":id", "menu-items"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "550e8400-e29b-41d4-a716-446655440000"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Menu Items By Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/menu-categories/:id/menu-items",
+							"host": ["{{baseUrl}}"],
+							"path": ["menu-categories", ":id", "menu-items"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Menu Item",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"price\": 13.99,\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/menu-items/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["menu-items", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Menu Item",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/menu-items/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["menu-items", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "Create Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"restaurantId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"tableId\": \"7c9e6679-7425-40de-944b-e07fc1f90ae7\",\n  \"notes\": \"Please serve starters first\",\n  \"items\": [\n    {\n      \"menuItemId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"quantity\": 2,\n      \"addons\": [\n        {\n          \"addonId\": \"c1a2b3c4-d5e6-7890-1234-56789abcdef0\",\n          \"quantity\": 1\n        }\n      ]\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders"]
+						}
+					}
+				},
+				{
+					"name": "Get Order By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/orders/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "9f1e44a0-5b23-41c9-8ef3-289d3c08f123"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Orders By Restaurant",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/restaurants/:id/orders",
+							"host": ["{{baseUrl}}"],
+							"path": ["restaurants", ":id", "orders"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "550e8400-e29b-41d4-a716-446655440000"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Orders By Table",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tables/:id/orders",
+							"host": ["{{baseUrl}}"],
+							"path": ["tables", ":id", "orders"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Order Status",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"CONFIRMED\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders/:id/status",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders", ":id", "status"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "9f1e44a0-5b23-41c9-8ef3-289d3c08f123"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Order Items",
+			"item": [
+				{
+					"name": "Get Order Item By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/order-items/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["order-items", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "4b6c8d10-3a21-49b8-a7ce-521f7c3241ab"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Items By Order",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/orders/:id/items",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders", ":id", "items"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "9f1e44a0-5b23-41c9-8ef3-289d3c08f123"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Addons",
+			"item": [
+				{
+					"name": "Create Addon",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"restaurantId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"name\": \"Extra Cheese\",\n  \"price\": 1.50\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/addons",
+							"host": ["{{baseUrl}}"],
+							"path": ["addons"]
+						}
+					}
+				},
+				{
+					"name": "Get Addon By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/addons/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["addons", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "c1a2b3c4-d5e6-7890-1234-56789abcdef0"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Addons By Restaurant",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/restaurants/:id/addons",
+							"host": ["{{baseUrl}}"],
+							"path": ["restaurants", ":id", "addons"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "550e8400-e29b-41d4-a716-446655440000"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Addon",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"price\": 2.00,\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/addons/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["addons", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "c1a2b3c4-d5e6-7890-1234-56789abcdef0"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Addon",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/addons/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["addons", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "c1a2b3c4-d5e6-7890-1234-56789abcdef0"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Assign Addons To Menu Item",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"addonIds\": [\n    \"c1a2b3c4-d5e6-7890-1234-56789abcdef0\",\n    \"d2b3c4d5-e6f7-8901-2345-6789abcdef01\"\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/menu-items/:id/addons",
+							"host": ["{{baseUrl}}"],
+							"path": ["menu-items", ":id", "addons"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Addons By Menu Item",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/menu-items/:id/addons",
+							"host": ["{{baseUrl}}"],
+							"path": ["menu-items", ":id", "addons"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+								}
+							]
+						}
+					}
+				}
+			]
+		}
+	]
+}

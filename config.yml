@@ -1,0 +1,28 @@
+db:
+  host: "db.eucgveokehsssslfihwv.supabase.co"
+  user: "postgres"
+  password: "#asdf$a4%^asd"
+  database: "postgres"
+  port: 5432
+  sslmode: "require"
+
+server:
+  port: 8080
+
+logger:
+  timeKey: "timestamp"
+  fileAppender: false
+  consoleAppender: true
+  fileName: "log.json"
+  logLevel: "debug"
+  traceKey: "debugId"
+
+jwt:
+  secret: "kitchen-api-super-secret-jwt-key-2026"
+  expirationHours: 24
+
+cors:
+  origin: "http://localhost:3000"
+
+app:
+  url: "http://localhost:3000"
