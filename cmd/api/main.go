@@ -43,6 +43,13 @@ func main() {
 			WHEN duplicate_object THEN null;
 		END $$;
 	`)
+	database.OrmInstance.Exec(`
+		DO $$ BEGIN
+			CREATE TYPE menu_type AS ENUM ('BAR', 'KITCHEN');
+		EXCEPTION
+			WHEN duplicate_object THEN null;
+		END $$;
+	`)
 
 	err = database.OrmInstance.AutoMigrate(
 		&restaurant.Restaurants{},

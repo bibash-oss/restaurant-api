@@ -20,15 +20,19 @@ func (repo *MenuItemRepository) CreateMenuItem(item *MenuItem) error {
 	return repo.db.OrmInstance.Create(item).Error
 }
 
-func (repo *MenuItemRepository) GetMenuItemsByRestaurantID(restaurantID uuid.UUID) ([]MenuItem, error) {
+func (repo *MenuItemRepository) GetMenuItemsByRestaurantID(restaurantID uuid.UUID, menuType string) ([]MenuItem, error) {
 	var items []MenuItem
-	err := repo.db.OrmInstance.
+	query := repo.db.OrmInstance.
 		Preload("Category").
 		Preload("Restaurant").
 		Preload("Addons").
-		Where("restaurant_id = ?", restaurantID).
-		Order("created_at ASC").
-		Find(&items).Error
+		Where("restaurant_id = ?", restaurantID)
+
+	if menuType != "" {
+		query = query.Where("menu_type = ?", menuType)
+	}
+
+	err := query.Order("created_at ASC").Find(&items).Error
 	return items, err
 }
 

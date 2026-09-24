@@ -2,6 +2,7 @@ package menuitem
 
 import (
 	"fmt"
+	"kitchen-api/internal/enums"
 
 	"github.com/google/uuid"
 )
@@ -25,6 +26,11 @@ func (s *MenuItemService) CreateMenuItem(req *CreateMenuItemRequest) (*MenuItem,
 		return nil, fmt.Errorf("invalid category ID")
 	}
 
+	menuType := enums.MenuTypeKitchen
+	if req.MenuType != nil && *req.MenuType != "" {
+		menuType = *req.MenuType
+	}
+
 	item := &MenuItem{
 		RestaurantID: restaurantID,
 		CategoryID:   categoryID,
@@ -32,6 +38,7 @@ func (s *MenuItemService) CreateMenuItem(req *CreateMenuItemRequest) (*MenuItem,
 		Description:  req.Description,
 		Price:        req.Price,
 		ImageURL:     req.ImageURL,
+		MenuType:     menuType,
 		IsActive:     true,
 	}
 
@@ -42,12 +49,12 @@ func (s *MenuItemService) CreateMenuItem(req *CreateMenuItemRequest) (*MenuItem,
 	return item, nil
 }
 
-func (s *MenuItemService) GetMenuItemsByRestaurantID(restaurantIDStr string) ([]MenuItem, error) {
+func (s *MenuItemService) GetMenuItemsByRestaurantID(restaurantIDStr string, menuType string) ([]MenuItem, error) {
 	restaurantID, err := uuid.Parse(restaurantIDStr)
 	if err != nil {
 		return nil, fmt.Errorf("invalid restaurant ID")
 	}
-	return s.itemRepo.GetMenuItemsByRestaurantID(restaurantID)
+	return s.itemRepo.GetMenuItemsByRestaurantID(restaurantID, menuType)
 }
 
 func (s *MenuItemService) GetMenuItemsByCategoryID(categoryIDStr string) ([]MenuItem, error) {
@@ -104,6 +111,9 @@ func (s *MenuItemService) UpdateMenuItem(idStr string, req *UpdateMenuItemReques
 	}
 	if req.ImageURL != nil {
 		item.ImageURL = req.ImageURL
+	}
+	if req.MenuType != nil && *req.MenuType != "" {
+		item.MenuType = *req.MenuType
 	}
 	if req.IsActive != nil {
 		item.IsActive = *req.IsActive

@@ -39,7 +39,8 @@ func (c *MenuItemController) GetMenuItemsByRestaurant(ctx *gin.Context) {
 	if restaurantID == "" {
 		restaurantID = ctx.Param("restaurantId")
 	}
-	items, err := c.itemService.GetMenuItemsByRestaurantID(restaurantID)
+	menuType := ctx.Query("menuType")
+	items, err := c.itemService.GetMenuItemsByRestaurantID(restaurantID, menuType)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

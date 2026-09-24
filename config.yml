@@ -1,7 +1,7 @@
 # db:
-#   host: "db.eucgveokehsssslfihwv.supabase.co"
+#   host: kitchen-db
 #   user: "postgres"
-#   password: "#asdf$a4%^asd"
+#   password: admin123
 #   database: "postgres"
 #   port: 5432
 #   sslmode: "require"
@@ -30,7 +30,9 @@ jwt:
   expirationHours: 24
 
 cors:
+  # origin: "http://localhost:3000"
   origin: "https://restaurant-ui-omega.vercel.app"
 
 app:
+  # url: "http://localhost:3000"
   url: "https://restaurant-ui-omega.vercel.app"
