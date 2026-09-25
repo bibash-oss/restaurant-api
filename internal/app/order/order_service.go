@@ -3,6 +3,7 @@ package order
 import (
 	"fmt"
 	"math"
+	"strings"
 
 	"kitchen-api/internal/app/addon"
 	menuitem "kitchen-api/internal/app/menu_item"
@@ -12,6 +13,21 @@ import (
 
 	"github.com/google/uuid"
 )
+
+type LineItemDetail struct {
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Quantity    int     `json:"quantity"`
+	UnitPrice   float64 `json:"unitPrice"`
+}
+
+type ValidatedOrderData struct {
+	RestaurantID uuid.UUID
+	TableID      uuid.UUID
+	TotalAmount  float64
+	LineItems    []LineItemDetail
+	OrderItems   []orderitem.OrderItem
+}
 
 type OrderService struct {
 	orderRepo *OrderRepository
@@ -34,7 +50,7 @@ func NewOrderService(
 	}
 }
 
-func (s *OrderService) CreateOrder(req *CreateOrderRequest) (*Order, error) {
+func (s *OrderService) buildAndValidateOrder(req *CreateOrderRequest) (*ValidatedOrderData, error) {
 	restaurantID, err := uuid.Parse(req.RestaurantID)
 	if err != nil {
 		return nil, fmt.Errorf("invalid restaurant ID")
@@ -168,6 +184,7 @@ func (s *OrderService) CreateOrder(req *CreateOrderRequest) (*Order, error) {
 	// 4. Build order items, validate addons per menu item, and calculate total
 	var totalAmount float64
 	orderItems := make([]orderitem.OrderItem, 0, len(parsedItems))
+	lineItems := make([]LineItemDetail, 0, len(parsedItems))
 
 	for _, pi := range parsedItems {
 		mi := menuItemMap[pi.menuItemID]
@@ -180,6 +197,7 @@ func (s *OrderService) CreateOrder(req *CreateOrderRequest) (*Order, error) {
 
 		var itemAddonTotal float64
 		itemAddons := make([]orderitem.OrderItemAddon, 0, len(pi.addons))
+		addonDescriptions := make([]string, 0, len(pi.addons))
 
 		orderItemID := uuid.New()
 		for _, pa := range pi.addons {
@@ -192,6 +210,7 @@ func (s *OrderService) CreateOrder(req *CreateOrderRequest) (*Order, error) {
 			}
 
 			itemAddonTotal += a.Price * float64(pa.quantity)
+			addonDescriptions = append(addonDescriptions, fmt.Sprintf("%s (x%d)", a.Name, pa.quantity))
 			itemAddons = append(itemAddons, orderitem.OrderItemAddon{
 				ID:          uuid.New(),
 				OrderItemID: orderItemID,
@@ -211,20 +230,83 @@ func (s *OrderService) CreateOrder(req *CreateOrderRequest) (*Order, error) {
 			UnitPrice:  mi.Price,
 			Addons:     itemAddons,
 		})
+
+		lineItems = append(lineItems, LineItemDetail{
+			Name:        mi.Name,
+			Description: strings.Join(addonDescriptions, ", "),
+			Quantity:    pi.quantity,
+			UnitPrice:   lineItemUnitPrice,
+		})
 	}
 
 	// Round totalAmount to 2 decimal places
 	totalAmount = math.Round(totalAmount*100) / 100
 
-	newOrder := &Order{
+	return &ValidatedOrderData{
 		RestaurantID: restaurantID,
 		TableID:      tableID,
-		Status:       enums.OrderStatusPending,
 		TotalAmount:  totalAmount,
-		Notes:        req.Notes,
+		LineItems:    lineItems,
+		OrderItems:   orderItems,
+	}, nil
+}
+
+func (s *OrderService) ValidateOrderForPayment(req *CreateOrderRequest) (*ValidatedOrderData, error) {
+	return s.buildAndValidateOrder(req)
+}
+
+func (s *OrderService) CreatePaidOrder(req *CreateOrderRequest, stripeSessionID string) (*Order, error) {
+	// Idempotency: Return existing order if already created for this Stripe session
+	if stripeSessionID != "" {
+		existing, err := s.orderRepo.GetOrderByStripeSessionID(stripeSessionID)
+		if err == nil && existing != nil {
+			return existing, nil
+		}
 	}
 
-	if err := s.orderRepo.CreateOrderWithItems(newOrder, orderItems); err != nil {
+	validated, err := s.buildAndValidateOrder(req)
+	if err != nil {
+		return nil, err
+	}
+
+	newOrder := &Order{
+		RestaurantID:    validated.RestaurantID,
+		TableID:         validated.TableID,
+		Status:          enums.OrderStatusPending,
+		TotalAmount:     validated.TotalAmount,
+		Notes:           req.Notes,
+		PaymentStatus:   "PAID",
+		StripeSessionID: &stripeSessionID,
+	}
+
+	if err := s.orderRepo.CreateOrderWithItems(newOrder, validated.OrderItems); err != nil {
+		return nil, err
+	}
+
+	fullOrder, err := s.orderRepo.GetOrderByID(newOrder.ID)
+	if err == nil && fullOrder != nil {
+		return fullOrder, nil
+	}
+
+	return newOrder, nil
+}
+
+func (s *OrderService) CreateOrder(req *CreateOrderRequest) (*Order, error) {
+	validated, err := s.buildAndValidateOrder(req)
+	if err != nil {
+		return nil, err
+	}
+
+	newOrder := &Order{
+		RestaurantID:  validated.RestaurantID,
+		TableID:       validated.TableID,
+		Status:        enums.OrderStatusPending,
+		TotalAmount:   validated.TotalAmount,
+		Notes:         req.Notes,
+		PaymentStatus: "UNPAID",
+	}
+
+	if err := s.orderRepo.CreateOrderWithItems(newOrder, validated.OrderItems); err != nil {
 		return nil, err
 	}
 

@@ -21,6 +21,15 @@ func NewOrderRepository(db *database.OrmDb) *OrderRepository {
 
 func (repo *OrderRepository) CreateOrderWithItems(o *Order, items []orderitem.OrderItem) error {
 	return repo.db.OrmInstance.Transaction(func(tx *gorm.DB) error {
+		// Idempotency check: if order with this stripe_session_id already exists, skip insertion
+		if o.StripeSessionID != nil && *o.StripeSessionID != "" {
+			var existing Order
+			if err := tx.Where("stripe_session_id = ?", *o.StripeSessionID).First(&existing).Error; err == nil {
+				*o = existing
+				return nil
+			}
+		}
+
 		if err := tx.Create(o).Error; err != nil {
 			return err
 		}
@@ -97,3 +106,22 @@ func (repo *OrderRepository) UpdateOrderStatus(id uuid.UUID, status enums.OrderS
 		Where("id = ?", id).
 		Update("status", status).Error
 }
+
+func (repo *OrderRepository) GetOrderByStripeSessionID(sessionID string) (*Order, error) {
+	var o Order
+	err := repo.db.OrmInstance.
+		Preload("OrderItems.MenuItem").
+		Preload("OrderItems.Addons.Addon").
+		Preload("Table").
+		Preload("Restaurant").
+		Where("stripe_session_id = ?", sessionID).
+		First(&o).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &o, nil
+}
+

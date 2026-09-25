@@ -9,7 +9,7 @@ import (
 	"kitchen-api/internal/database"
 )
 
-func RegisterOrderRoutes(r *gin.Engine, db *database.OrmDb) {
+func RegisterOrderRoutes(r *gin.Engine, db *database.OrmDb) *OrderService {
 	orderRepo := NewOrderRepository(db)
 	tableRepo := table.NewTableRepository(db)
 	itemRepo := menuitem.NewMenuItemRepository(db)
@@ -34,4 +34,6 @@ func RegisterOrderRoutes(r *gin.Engine, db *database.OrmDb) {
 	{
 		tableOrderGroup.GET("", controller.GetOrdersByTable)
 	}
+
+	return service
 }

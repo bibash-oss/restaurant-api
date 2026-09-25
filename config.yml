@@ -34,5 +34,11 @@ cors:
   origin: "https://restaurant-ui-omega.vercel.app"
 
 app:
-  # url: "http://localhost:3000"
+  # url: "http://192.168.1.91:3000"
   url: "https://restaurant-ui-omega.vercel.app"
+
+stripe:
+  secretKey: ""
+  webhookSecret: ""
+  currency: "aud"
+

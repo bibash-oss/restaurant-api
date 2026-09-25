@@ -10,6 +10,7 @@ import (
 	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type OrmDb struct {
@@ -61,6 +62,7 @@ func OpenPostgresORM(host string, port int, username string, password string, db
 		DriverName: "postgres",
 	}), &gorm.Config{
 		PrepareStmt: true,
+		Logger:      logger.Default.LogMode(logger.Error),
 	})
 	if err != nil {
 		return OrmDb{}, fmt.Errorf("failed to open gorm db: %w", err)

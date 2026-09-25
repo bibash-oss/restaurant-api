@@ -1,6 +1,7 @@
 package config
 
 import (
+	"bufio"
 	"log"
 	"os"
 	"strings"
@@ -28,7 +29,34 @@ var (
 	instance Config
 )
 
+func loadDotEnv(filepath string) {
+	file, err := os.Open(filepath)
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) == 2 {
+			k := strings.TrimSpace(parts[0])
+			v := strings.TrimSpace(parts[1])
+			v = strings.Trim(v, `"'`)
+			if os.Getenv(k) == "" {
+				os.Setenv(k, v)
+			}
+		}
+	}
+}
+
 func initConfigs() {
+	loadDotEnv(".env")
+
 	viper.SetConfigName("config")
 	viper.SetConfigType("yml")
 

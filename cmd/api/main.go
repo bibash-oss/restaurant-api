@@ -6,6 +6,7 @@ import (
 	menuitem "kitchen-api/internal/app/menu_item"
 	"kitchen-api/internal/app/order"
 	orderitem "kitchen-api/internal/app/order_item"
+	"kitchen-api/internal/app/payment"
 	"kitchen-api/internal/app/restaurant"
 	"kitchen-api/internal/app/table"
 	"kitchen-api/internal/app/user"
@@ -61,10 +62,13 @@ func main() {
 		&orderitem.OrderItem{},
 		&orderitem.OrderItemAddon{},
 		&addon.Addon{},
+		&payment.PaymentSession{},
 	)
 	if err != nil {
 		log.Fatal("Error while running auto migrations: ", err)
 	}
+
+	database.OrmInstance.Exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_orders_stripe_session_id ON orders(stripe_session_id) WHERE stripe_session_id IS NOT NULL;")
 
 	router := server.NewRouter(database)
 	port := config.GetString("server.port")

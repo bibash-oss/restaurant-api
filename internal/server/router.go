@@ -9,6 +9,7 @@ import (
 	menuitem "kitchen-api/internal/app/menu_item"
 	"kitchen-api/internal/app/order"
 	orderitem "kitchen-api/internal/app/order_item"
+	"kitchen-api/internal/app/payment"
 	"kitchen-api/internal/app/restaurant"
 	"kitchen-api/internal/app/table"
 	"kitchen-api/internal/app/user"
@@ -57,9 +58,10 @@ func NewRouter(db *database.OrmDb) *gin.Engine {
 	table.RegisterTableRoutes(router, db)
 	menucategory.RegisterMenuCategoryRoutes(router, db)
 	menuitem.RegisterMenuItemRoutes(router, db)
-	order.RegisterOrderRoutes(router, db)
+	orderService := order.RegisterOrderRoutes(router, db)
 	orderitem.RegisterOrderItemRoutes(router, db)
 	addon.RegisterAddonRoutes(router, db)
+	payment.RegisterPaymentRoutes(router, db, orderService)
 
 	return router
 }
