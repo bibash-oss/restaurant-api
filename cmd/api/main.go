@@ -16,11 +16,20 @@ import (
 
 	"kitchen-api/internal/config"
 	"kitchen-api/internal/database"
+
 	"gorm.io/driver/postgres"
 )
 
 func main() {
 	config := config.Default()
+
+	stripeKey := config.GetString("stripe.secretKey")
+	if key := os.Getenv("STRIPE_SECRET_KEY"); key != "" {
+		stripeKey = key
+	}
+
+	print("stipe key", stripeKey)
+
 	database, err := openPostgresDb()
 	if err != nil {
 		log.Fatal("Error while connecting to database", err)
