@@ -31,9 +31,12 @@ func NewPaymentService(paymentRepo *PaymentRepository, orderService *order.Order
 }
 
 func (s *PaymentService) getStripeKey() string {
-	if key := os.Getenv("STRIPE_SECRET_KEY"); key != "" {
+	key := os.Getenv("STRIPE_SECRET_KEY")
+	fmt.Println("stripe key", key)
+	if key != "" {
 		return key
 	}
+
 	return config.Default().GetString("stripe.secretKey")
 }
 
