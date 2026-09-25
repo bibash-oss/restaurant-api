@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"kitchen-api/internal/app/addon"
 	menucategory "kitchen-api/internal/app/menu_category"
 	menuitem "kitchen-api/internal/app/menu_item"
@@ -28,7 +29,7 @@ func main() {
 		stripeKey = key
 	}
 
-	print("stipe key", stripeKey)
+	fmt.Println("stipe key", stripeKey)
 
 	database, err := openPostgresDb()
 	if err != nil {
