@@ -38,7 +38,7 @@ app:
   url: "https://restaurant-ui-omega.vercel.app"
 
 stripe:
-  secretKey: ""
-  webhookSecret: ""
+  secretKey: "config key"
+  webhookSecret: "bla bla"
   currency: "aud"
 
