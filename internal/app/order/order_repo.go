@@ -63,22 +63,8 @@ func (repo *OrderRepository) GetOrdersByRestaurantID(restaurantID uuid.UUID) ([]
 	err := repo.db.OrmInstance.
 		Preload("OrderItems.MenuItem").
 		Preload("OrderItems.Addons.Addon").
-		Preload("Table").
 		Preload("Restaurant").
 		Where("restaurant_id = ?", restaurantID).
-		Order("created_at DESC").
-		Find(&orders).Error
-	return orders, err
-}
-
-func (repo *OrderRepository) GetOrdersByTableID(tableID uuid.UUID) ([]Order, error) {
-	var orders []Order
-	err := repo.db.OrmInstance.
-		Preload("OrderItems.MenuItem").
-		Preload("OrderItems.Addons.Addon").
-		Preload("Table").
-		Preload("Restaurant").
-		Where("table_id = ?", tableID).
 		Order("created_at DESC").
 		Find(&orders).Error
 	return orders, err
@@ -89,7 +75,6 @@ func (repo *OrderRepository) GetOrderByID(id uuid.UUID) (*Order, error) {
 	err := repo.db.OrmInstance.
 		Preload("OrderItems.MenuItem").
 		Preload("OrderItems.Addons.Addon").
-		Preload("Table").
 		Preload("Restaurant").
 		First(&o, "id = ?", id).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -112,7 +97,6 @@ func (repo *OrderRepository) GetOrderByStripeSessionID(sessionID string) (*Order
 	err := repo.db.OrmInstance.
 		Preload("OrderItems.MenuItem").
 		Preload("OrderItems.Addons.Addon").
-		Preload("Table").
 		Preload("Restaurant").
 		Where("stripe_session_id = ?", sessionID).
 		First(&o).Error

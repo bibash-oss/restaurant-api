@@ -30,12 +30,12 @@ jwt:
   expirationHours: 24
 
 cors:
-  # origin: "http://localhost:3000"
-  origin: "https://restaurant-ui-omega.vercel.app"
+  origin: "http://localhost:3000"
+  # origin: "https://restaurant-ui-omega.vercel.app"
 
 app:
-  # url: "http://192.168.1.91:3000"
-  url: "https://restaurant-ui-omega.vercel.app"
+  url: "http://192.168.1.91:3000"
+  # url: "https://restaurant-ui-omega.vercel.app"
 
 stripe:
   secretKey: "config key"

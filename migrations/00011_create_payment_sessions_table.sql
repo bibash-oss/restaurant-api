@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS payment_sessions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     stripe_session_id VARCHAR(255) NOT NULL UNIQUE,
     restaurant_id UUID NOT NULL REFERENCES restaurants(id) ON DELETE CASCADE,
-    table_id UUID NOT NULL REFERENCES tables(id) ON DELETE RESTRICT,
+    table_name VARCHAR(255) DEFAULT NULL,
     order_payload TEXT NOT NULL,
     total_amount DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     currency VARCHAR(10) NOT NULL DEFAULT 'aud',
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS payment_sessions (
 
 CREATE INDEX IF NOT EXISTS idx_payment_sessions_stripe_session_id ON payment_sessions(stripe_session_id);
 CREATE INDEX IF NOT EXISTS idx_payment_sessions_restaurant_id ON payment_sessions(restaurant_id);
-CREATE INDEX IF NOT EXISTS idx_payment_sessions_table_id ON payment_sessions(table_id);
+CREATE INDEX IF NOT EXISTS idx_payment_sessions_table_name ON payment_sessions(table_name);
 CREATE INDEX IF NOT EXISTS idx_payment_sessions_status ON payment_sessions(status);
 -- +goose StatementEnd
 

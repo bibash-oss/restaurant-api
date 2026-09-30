@@ -28,6 +28,7 @@ func (service *RestaurantService) CreateRestaurant(userReq *CreateRestaurantRequ
 		Name:     userReq.Name,
 		Slug:     slug,
 		Address:  &userReq.Address,
+		ImgURL:   userReq.ImgURL,
 		IsActive: true,
 	}
 

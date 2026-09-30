@@ -4,7 +4,6 @@ import (
 	"github.com/google/uuid"
 	"kitchen-api/internal/app/order"
 	"kitchen-api/internal/app/restaurant"
-	"kitchen-api/internal/app/table"
 	"kitchen-api/internal/helper"
 )
 
@@ -13,8 +12,7 @@ type PaymentSession struct {
 	StripeSessionID string                  `gorm:"type:varchar(255);uniqueIndex;not null" json:"stripeSessionId"`
 	RestaurantID    uuid.UUID               `gorm:"type:uuid;not null" json:"restaurantId"`
 	Restaurant      *restaurant.Restaurants `json:"restaurant,omitempty"`
-	TableID         uuid.UUID               `gorm:"type:uuid;not null" json:"tableId"`
-	Table           *table.Table            `json:"table,omitempty"`
+	TableName       string                  `gorm:"type:varchar(255);column:table_name" json:"tableName"`
 	OrderPayload    string                  `gorm:"type:text;not null" json:"-"`
 	TotalAmount     float64                 `gorm:"type:decimal(10,2);not null" json:"totalAmount"`
 	Currency        string                  `gorm:"type:varchar(10);default:'aud';not null" json:"currency"`

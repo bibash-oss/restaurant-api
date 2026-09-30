@@ -8,7 +8,6 @@ import (
 	"kitchen-api/internal/app/addon"
 	menuitem "kitchen-api/internal/app/menu_item"
 	orderitem "kitchen-api/internal/app/order_item"
-	"kitchen-api/internal/app/table"
 	"kitchen-api/internal/enums"
 
 	"github.com/google/uuid"
@@ -23,7 +22,7 @@ type LineItemDetail struct {
 
 type ValidatedOrderData struct {
 	RestaurantID uuid.UUID
-	TableID      uuid.UUID
+	TableName    string
 	TotalAmount  float64
 	LineItems    []LineItemDetail
 	OrderItems   []orderitem.OrderItem
@@ -31,20 +30,17 @@ type ValidatedOrderData struct {
 
 type OrderService struct {
 	orderRepo *OrderRepository
-	tableRepo *table.TableRepository
 	itemRepo  *menuitem.MenuItemRepository
 	addonRepo *addon.AddonRepository
 }
 
 func NewOrderService(
 	orderRepo *OrderRepository,
-	tableRepo *table.TableRepository,
 	itemRepo *menuitem.MenuItemRepository,
 	addonRepo *addon.AddonRepository,
 ) *OrderService {
 	return &OrderService{
 		orderRepo: orderRepo,
-		tableRepo: tableRepo,
 		itemRepo:  itemRepo,
 		addonRepo: addonRepo,
 	}
@@ -56,24 +52,9 @@ func (s *OrderService) buildAndValidateOrder(req *CreateOrderRequest) (*Validate
 		return nil, fmt.Errorf("invalid restaurant ID")
 	}
 
-	tableID, err := uuid.Parse(req.TableID)
-	if err != nil {
-		return nil, fmt.Errorf("invalid table ID")
-	}
-
-	// Validate table exists, is active, and belongs to this restaurant
-	tbl, err := s.tableRepo.GetTableByID(tableID)
-	if err != nil {
-		return nil, err
-	}
-	if tbl == nil {
-		return nil, fmt.Errorf("table not found")
-	}
-	if tbl.RestaurantID != restaurantID {
-		return nil, fmt.Errorf("table does not belong to this restaurant")
-	}
-	if !tbl.IsActive {
-		return nil, fmt.Errorf("table is currently inactive")
+	tableName := strings.TrimSpace(req.TableName)
+	if tableName == "" {
+		return nil, fmt.Errorf("table name is required")
 	}
 
 	if len(req.Items) == 0 {
@@ -244,7 +225,7 @@ func (s *OrderService) buildAndValidateOrder(req *CreateOrderRequest) (*Validate
 
 	return &ValidatedOrderData{
 		RestaurantID: restaurantID,
-		TableID:      tableID,
+		TableName:    tableName,
 		TotalAmount:  totalAmount,
 		LineItems:    lineItems,
 		OrderItems:   orderItems,
@@ -271,7 +252,7 @@ func (s *OrderService) CreatePaidOrder(req *CreateOrderRequest, stripeSessionID 
 
 	newOrder := &Order{
 		RestaurantID:    validated.RestaurantID,
-		TableID:         validated.TableID,
+		TableName:       validated.TableName,
 		Status:          enums.OrderStatusPending,
 		TotalAmount:     validated.TotalAmount,
 		Notes:           req.Notes,
@@ -299,7 +280,7 @@ func (s *OrderService) CreateOrder(req *CreateOrderRequest) (*Order, error) {
 
 	newOrder := &Order{
 		RestaurantID:  validated.RestaurantID,
-		TableID:       validated.TableID,
+		TableName:     validated.TableName,
 		Status:        enums.OrderStatusPending,
 		TotalAmount:   validated.TotalAmount,
 		Notes:         req.Notes,
@@ -310,7 +291,7 @@ func (s *OrderService) CreateOrder(req *CreateOrderRequest) (*Order, error) {
 		return nil, err
 	}
 
-	// Return preloaded order with Table, Restaurant, and Item details for receipt printing
+	// Return preloaded order with Restaurant and Item details for receipt printing
 	fullOrder, err := s.orderRepo.GetOrderByID(newOrder.ID)
 	if err == nil && fullOrder != nil {
 		return fullOrder, nil
@@ -325,14 +306,6 @@ func (s *OrderService) GetOrdersByRestaurantID(restaurantIDStr string) ([]Order,
 		return nil, fmt.Errorf("invalid restaurant ID")
 	}
 	return s.orderRepo.GetOrdersByRestaurantID(restaurantID)
-}
-
-func (s *OrderService) GetOrdersByTableID(tableIDStr string) ([]Order, error) {
-	tableID, err := uuid.Parse(tableIDStr)
-	if err != nil {
-		return nil, fmt.Errorf("invalid table ID")
-	}
-	return s.orderRepo.GetOrdersByTableID(tableID)
 }
 
 func (s *OrderService) GetOrderByID(idStr string) (*Order, error) {

@@ -24,7 +24,6 @@ func (r *PaymentRepository) GetByStripeSessionID(sessionID string) (*PaymentSess
 	err := r.db.OrmInstance.
 		Preload("Order").
 		Preload("Order.OrderItems").
-		Preload("Order.Table").
 		Preload("Order.Restaurant").
 		Where("stripe_session_id = ?", sessionID).
 		First(&session).Error

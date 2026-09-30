@@ -3,7 +3,6 @@ package order
 import (
 	"kitchen-api/internal/app/addon"
 	menuitem "kitchen-api/internal/app/menu_item"
-	"kitchen-api/internal/app/table"
 
 	"github.com/gin-gonic/gin"
 	"kitchen-api/internal/database"
@@ -11,11 +10,10 @@ import (
 
 func RegisterOrderRoutes(r *gin.Engine, db *database.OrmDb) *OrderService {
 	orderRepo := NewOrderRepository(db)
-	tableRepo := table.NewTableRepository(db)
 	itemRepo := menuitem.NewMenuItemRepository(db)
 	addonRepo := addon.NewAddonRepository(db)
 
-	service := NewOrderService(orderRepo, tableRepo, itemRepo, addonRepo)
+	service := NewOrderService(orderRepo, itemRepo, addonRepo)
 	controller := NewOrderController(service)
 
 	orderGroup := r.Group("/orders")
@@ -28,11 +26,6 @@ func RegisterOrderRoutes(r *gin.Engine, db *database.OrmDb) *OrderService {
 	restaurantOrderGroup := r.Group("/restaurants/:id/orders")
 	{
 		restaurantOrderGroup.GET("", controller.GetOrdersByRestaurant)
-	}
-
-	tableOrderGroup := r.Group("/tables/:id/orders")
-	{
-		tableOrderGroup.GET("", controller.GetOrdersByTable)
 	}
 
 	return service

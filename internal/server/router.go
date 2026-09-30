@@ -11,7 +11,6 @@ import (
 	orderitem "kitchen-api/internal/app/order_item"
 	"kitchen-api/internal/app/payment"
 	"kitchen-api/internal/app/restaurant"
-	"kitchen-api/internal/app/table"
 	"kitchen-api/internal/app/user"
 
 	"github.com/gin-gonic/gin"
@@ -55,7 +54,6 @@ func NewRouter(db *database.OrmDb) *gin.Engine {
 	auth.RegisterAuthRoutes(router, db)
 	user.RegisterUserRoutes(router, db)
 	restaurant.RegisterRestaurantRoutes(router, db)
-	table.RegisterTableRoutes(router, db)
 	menucategory.RegisterMenuCategoryRoutes(router, db)
 	menuitem.RegisterMenuItemRoutes(router, db)
 	orderService := order.RegisterOrderRoutes(router, db)

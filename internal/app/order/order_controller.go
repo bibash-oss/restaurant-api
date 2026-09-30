@@ -52,23 +52,6 @@ func (c *OrderController) GetOrdersByRestaurant(ctx *gin.Context) {
 	})
 }
 
-func (c *OrderController) GetOrdersByTable(ctx *gin.Context) {
-	tableID := ctx.Param("id")
-	if tableID == "" {
-		tableID = ctx.Param("tableId")
-	}
-	orders, err := c.orderService.GetOrdersByTableID(tableID)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"data":    orders,
-		"success": true,
-		"message": "Orders fetched successfully",
-	})
-}
 
 func (c *OrderController) GetOrderByID(ctx *gin.Context) {
 	id := ctx.Param("id")

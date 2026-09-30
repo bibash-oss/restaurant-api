@@ -1,6 +1,8 @@
 package order
 
-import "kitchen-api/internal/enums"
+import (
+	"kitchen-api/internal/enums"
+)
 
 type OrderItemAddonInput struct {
 	AddonID  string `json:"addonId" binding:"required"`
@@ -15,7 +17,7 @@ type OrderItemInput struct {
 
 type CreateOrderRequest struct {
 	RestaurantID string           `json:"restaurantId" binding:"required"`
-	TableID      string           `json:"tableId" binding:"required"`
+	TableName    string           `json:"tableName"`
 	Notes        string           `json:"notes,omitempty"`
 	Items        []OrderItemInput `json:"items" binding:"required,min=1,dive"`
 }

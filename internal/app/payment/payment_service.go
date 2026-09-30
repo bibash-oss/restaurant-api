@@ -124,7 +124,7 @@ func (s *PaymentService) CreateCheckoutSession(req *order.CreateOrderRequest) (*
 		Locale:     stripe.String("auto"),
 		Metadata: map[string]string{
 			"restaurant_id": req.RestaurantID,
-			"table_id":      req.TableID,
+			"table_name":    req.TableName,
 		},
 	}
 
@@ -150,7 +150,7 @@ func (s *PaymentService) CreateCheckoutSession(req *order.CreateOrderRequest) (*
 	paymentSession := &PaymentSession{
 		StripeSessionID: sess.ID,
 		RestaurantID:    validated.RestaurantID,
-		TableID:         validated.TableID,
+		TableName:       validated.TableName,
 		OrderPayload:    string(payloadBytes),
 		TotalAmount:     validated.TotalAmount,
 		Currency:        currency,

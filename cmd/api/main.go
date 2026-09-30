@@ -9,7 +9,6 @@ import (
 	orderitem "kitchen-api/internal/app/order_item"
 	"kitchen-api/internal/app/payment"
 	"kitchen-api/internal/app/restaurant"
-	"kitchen-api/internal/app/table"
 	"kitchen-api/internal/app/user"
 	"kitchen-api/internal/server"
 	"log"
@@ -61,11 +60,35 @@ func main() {
 			WHEN duplicate_object THEN null;
 		END $$;
 	`)
+	database.OrmInstance.Exec(`
+		DO $$ BEGIN
+			IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'orders' AND column_name = 'table_id') 
+			   AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'tables') THEN
+				UPDATE orders o
+				SET table_name = COALESCE(t.number::text, 'N/A')
+				FROM tables t
+				WHERE o.table_id = t.id AND (o.table_name IS NULL OR o.table_name = '');
+			END IF;
+			IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'orders' AND column_name = 'table_name') THEN
+				UPDATE orders SET table_name = 'N/A' WHERE table_name IS NULL;
+			END IF;
+
+			IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'payment_sessions' AND column_name = 'table_id') 
+			   AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'tables') THEN
+				UPDATE payment_sessions p
+				SET table_name = COALESCE(t.number::text, 'N/A')
+				FROM tables t
+				WHERE p.table_id = t.id AND (p.table_name IS NULL OR p.table_name = '');
+			END IF;
+			IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'payment_sessions' AND column_name = 'table_name') THEN
+				UPDATE payment_sessions SET table_name = 'N/A' WHERE table_name IS NULL;
+			END IF;
+		END $$;
+	`)
 
 	err = database.OrmInstance.AutoMigrate(
 		&restaurant.Restaurants{},
 		&user.Users{},
-		&table.Table{},
 		&menucategory.MenuCategory{},
 		&menuitem.MenuItem{},
 		&order.Order{},

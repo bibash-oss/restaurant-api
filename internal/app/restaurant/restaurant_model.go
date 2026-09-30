@@ -12,5 +12,6 @@ type Restaurants struct {
 	Slug     string    `gorm:"type:varchar(355);not null;unique" json:"slug"`
 	IsActive bool      `gorm:"type:boolean;default:true;not null" json:"isActive"`
 	Address  *string   `gorm:"type:varchar(255)" json:"address"`
+	ImgURL   *string   `gorm:"type:varchar(500);column:img_url;default:null" json:"imgUrl"`
 	helper.Generic
 }
